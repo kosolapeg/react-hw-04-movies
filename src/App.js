@@ -1,30 +1,36 @@
-import React, { Component } from 'react';
-import Home from './pages/Home';
-import About from './pages/About';
-import Contacts from './pages/Contacts';
-import { Switch, Route, Link } from 'react-router-dom';
+import React, { Component, Suspense, lazy } from 'react';
+import { Switch, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+
+const HomePage = lazy(() =>
+  import('./pages/HomePage' /* webpackChunkName: "home-page" */),
+);
+
+const Movies = lazy(() =>
+  import('./pages/Movies' /* webpackChunkName: "movies" */),
+);
+
+const MovieDetailsPage = lazy(() =>
+  import('./pages/MovieDetailsPage' /* webpackChunkName: "movie-info" */),
+);
 
 class App extends Component {
+  state = {
+    movies: [],
+  };
+
   render() {
     return (
       <>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/about">About</Link>
-          </li>
-          <li>
-            <Link to="/contacts">Contacts</Link>
-          </li>
-        </ul>
+        <Navbar />
 
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/about" component={About} />
-          <Route exact path="/contacts" component={Contacts} />
-        </Switch>
+        <Suspense fallback={<h2>Loading...</h2>}>
+          <Switch>
+            <Route path="/movies/:movieId" component={MovieDetailsPage} />
+            <Route path="/movies" component={Movies} />
+            <Route exact path="/" component={HomePage} />
+          </Switch>
+        </Suspense>
       </>
     );
   }
