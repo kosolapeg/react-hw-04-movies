@@ -1,5 +1,5 @@
 import React, { Component, Suspense, lazy } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
 const HomePage = lazy(() =>
@@ -25,11 +25,11 @@ class App extends Component {
         <Navbar />
 
         <Suspense fallback={<h2>Loading...</h2>}>
-          <Switch>
-            <Route path="/movies/:movieId" component={MovieDetailsPage} />
-            <Route path="/movies" component={Movies} />
-            <Route exact path="/" component={HomePage} />
-          </Switch>
+          <Routes>
+            <Route path="/movies/:movieId/*" element={<MovieDetailsPage />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/" element={<HomePage />} />
+          </Routes>
         </Suspense>
       </>
     );

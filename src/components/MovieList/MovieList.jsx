@@ -1,4 +1,4 @@
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const MovieList = ({ movies, location }) => (
   <ul>
@@ -17,4 +17,4 @@ const MovieList = ({ movies, location }) => (
   </ul>
 );
 
-export default withRouter(MovieList);
+export default MovieList;

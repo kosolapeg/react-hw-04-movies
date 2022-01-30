@@ -1,5 +1,13 @@
 import React, { Component, Suspense, lazy } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
+
 import { getMovie } from './../services/movies-api';
 import noPosterImg from './../images/no-poster.png';
 
@@ -10,6 +18,21 @@ const Cast = lazy(() =>
 const Reviews = lazy(() =>
   import('./../components/Reviews' /* webpackChunkName: "reviews" */),
 );
+
+const WrappedComponent = props => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
+  return (
+    <MovieDetailsPage
+      navigate={navigate}
+      location={location}
+      params={params}
+      {...props}
+    />
+  );
+};
 
 class MovieDetailsPage extends Component {
   state = {
@@ -24,7 +47,7 @@ class MovieDetailsPage extends Component {
   };
 
   async componentDidMount() {
-    const { movieId } = this.props.match.params;
+    const { movieId } = this.props.params;
     try {
       const movieData = await getMovie(movieId);
       this.setState({
@@ -43,12 +66,10 @@ class MovieDetailsPage extends Component {
   }
 
   handleGoBack = () => {
-    const { history, location } = this.props;
-    history.push(location?.state?.from || '/');
+    this.props.navigate('/');
   };
 
   render() {
-    const { url, path } = this.props.match;
     const {
       poster_path,
       release_date,
@@ -95,20 +116,22 @@ class MovieDetailsPage extends Component {
         <h3>Aditional information:</h3>
         <ul>
           <li>
-            <Link to={`${url}/cast`}>Cast</Link>
+            <Link to="cast">Cast</Link>
           </li>
           <li>
-            <Link to={`${url}/review`}>Reviews</Link>
+            <Link to={`review`}>Reviews</Link>
           </li>
         </ul>
-        <Suspense fallback={<h2>loading...</h2>}></Suspense>
-        <Switch>
-          <Route path={`${path}/cast`} component={Cast} />
-          <Route path={`${path}/review`} component={Reviews} />
-        </Switch>
+
+        <Suspense fallback={<h3>loading...</h3>}>
+          <Routes>
+            <Route path="cast" element={<Cast />} />
+            <Route path="review" element={<Reviews />} />
+          </Routes>
+        </Suspense>
       </>
     );
   }
 }
 
-export default MovieDetailsPage;
+export default WrappedComponent;

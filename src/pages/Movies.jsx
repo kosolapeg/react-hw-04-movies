@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { withRouter, useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import MovieList from '../components/MovieList/';
 import Searchbar from '../components/Searchbar/';
@@ -7,12 +7,13 @@ import { searchMovies } from '../services/movies-api';
 
 const Movies = () => {
   const location = useLocation();
+  const history = useNavigate();
+
   const queryParams = queryString.parse(location.search);
   console.log(queryParams);
   const [query, setQuery] = useState(queryParams.query || '');
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
-  const history = useHistory();
 
   useEffect(() => {
     if (queryParams.query) {
@@ -53,4 +54,4 @@ const Movies = () => {
     </>
   );
 };
-export default withRouter(Movies);
+export default Movies;

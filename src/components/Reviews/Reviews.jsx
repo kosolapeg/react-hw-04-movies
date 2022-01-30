@@ -1,52 +1,50 @@
-import React, { Component } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { getMovieReviews } from './../../services/movies-api';
 
-class Reviews extends Component {
-  state = {
-    reviews: [],
-  };
-  async componentDidMount() {
-    const { movieId } = this.props.match.params;
-    console.log(movieId);
+const Reviews = () => {
+  const { movieId } = useParams();
+  const [reviews, setReviews] = useState([]);
 
-    const reviews = await getMovieReviews(movieId);
-    this.setState({ reviews: reviews });
-  }
+  useEffect(() => {
+    async function fetchReviews() {
+      const reviews = await getMovieReviews(movieId);
+      setReviews(reviews);
+      console.log('REvies', reviews);
+    }
 
-  render() {
-    const { reviews } = this.state;
-    console.log(reviews.length);
-    return (
-      <>
-        <ul>
-          {reviews.map(
-            ({ id, author, content, author_details: { avatar_path } }) => {
-              let avatarSrc;
+    fetchReviews();
+  }, [movieId]);
 
-              if (avatar_path.substring(1, 6) === 'https') {
-                avatarSrc = avatar_path.substring(1);
-              } else {
-                avatarSrc = `https://image.tmdb.org/t/p/w200/${avatar_path}`;
-              }
+  return (
+    <>
+      <ul>
+        {reviews.map(
+          ({ id, author, content, author_details: { avatar_path } }) => {
+            let avatarSrc;
 
-              return (
-                <li key={id} className="reviewContent">
-                  <img src={avatarSrc} alt={author} width={100} />
-                  <p>
-                    <b>{author}: </b>
-                    {content}
-                  </p>
-                </li>
-              );
-            },
-          )}
-        </ul>
-        {reviews.length < 1 && (
-          <h3>We don't have any reviews for this movie</h3>
+            if (avatar_path?.substring(1, 6) === 'https') {
+              avatarSrc = avatar_path.substring(1);
+            } else {
+              avatarSrc = `https://image.tmdb.org/t/p/w200/${avatar_path}`;
+            }
+
+            return (
+              <li key={id} className="reviewContent">
+                <img src={avatarSrc} alt={author} width={100} />
+                <p>
+                  <b>{author}: </b>
+                  {content}
+                </p>
+              </li>
+            );
+          },
         )}
-      </>
-    );
-  }
-}
+      </ul>
+      {reviews.length < 1 && <h3>We don't have any reviews for this movie</h3>}
+    </>
+  );
+};
 
 export default Reviews;
